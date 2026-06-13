@@ -23,8 +23,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <button class="btn btn-secondary" onclick="refreshTable()">
-
+                    <button class="btn btn-secondary" onclick="loadReviews()">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
                             viewBox="0 0 16 16">
                             <path fill-rule="evenodd"
@@ -51,47 +50,7 @@
                                 <th scope="col" class="text-nowrap border-0 py-3 text-center">Action</th>
                             </tr>
                         </thead>
-
                         <tbody id="reviewTableBody" class="border-top-0">
-                            <tr>
-                                <th class="px-3 py-3" scope="row">1</th>
-                                <td class="py-3">KFC Changlun</td>
-                                <td class="py-3">2026-06-11</td>
-                                <td class="py-3">4 Stars</td>
-                                <td class="py-3">10 mins</td>
-                                <td class="py-3">Chicken was hot and crispy, but the queue was a bit long.</td>
-                                <td class="py-3">6.432521</td>
-                                <td class="py-3">100.431234</td>
-                                <td class="py-3 text-center">
-                                    <button class="btn btn-sm btn-danger" onclick="deleteRecord(1)">Delete</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th class="px-3 py-3" scope="row">2</th>
-                                <td class="py-3">McDonald's Petronas</td>
-                                <td class="py-3">2026-06-10</td>
-                                <td class="py-3">5 Stars</td>
-                                <td class="py-3">Under 5 mins</td>
-                                <td class="py-3">Drive-thru was super fast. Spicy McChicken hit the spot!</td>
-                                <td class="py-3">6.428910</td>
-                                <td class="py-3">100.428850</td>
-                                <td class="py-3 text-center">
-                                    <button class="btn btn-sm btn-danger" onclick="deleteRecord(2)">Delete</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th class="px-3 py-3" scope="row">3</th>
-                                <td class="py-3">Marrybrown C-Mart</td>
-                                <td class="py-3">2026-06-08</td>
-                                <td class="py-3">3 Stars</td>
-                                <td class="py-3">20+ mins</td>
-                                <td class="py-3">Very packed during lunch hour. Nasi Lemak MB was okay, though.</td>
-                                <td class="py-3">6.430122</td>
-                                <td class="py-3">100.425510</td>
-                                <td class="py-3 text-center">
-                                    <button class="btn btn-sm btn-danger" onclick="deleteRecord(3)">Delete</button>
-                                </td>
-                            </tr>
                         </tbody>
 
                     </table>
