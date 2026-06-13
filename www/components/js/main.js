@@ -1,6 +1,6 @@
 let map;
 
-// GOOGLE MAPS API INTEGRATION
+// 1. GOOGLE MAPS API INTEGRATION
 function initMap() {
     const defaultLocation = { lat: 6.4325, lng: 100.4312 }; // Changlun context
 
@@ -17,12 +17,12 @@ function initMap() {
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition((position) => {
             const userPos = { lat: position.coords.latitude, lng: position.coords.longitude };
-
+            
             if (map) {
                 map.setCenter(userPos);
                 new google.maps.Marker({ position: userPos, map: map, title: "You are here" });
             }
-
+            
             // Safely set hidden form coordinates if they exist in HTML
             const latInput = document.getElementById('latitude');
             const lngInput = document.getElementById('longitude');
@@ -34,7 +34,7 @@ function initMap() {
             console.warn("Location access denied or failed.");
         });
     }
-
+    
     loadReviews();
 }
 
@@ -52,29 +52,80 @@ function setRating(ratingValue) {
 }
 
 // FORM VALIDATION, SUBMIT & RESET
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('fastFoodForm');
+    if (!form) return;
 
+    form.addEventListener('reset', () => {
+        document.getElementById('reviewRating').value = "0";
+        document.getElementById('ratingFeedback').style.display = 'none';
+        setRating(0); // Reuses the function to quickly empty all stars!
+        form.classList.remove('was-validated');
+    });
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        let isValid = form.checkValidity();
+        const ratingValue = document.getElementById('reviewRating').value;
+        
+        if (ratingValue === "0") {
+            document.getElementById('ratingFeedback').style.display = 'block';
+            isValid = false;
+        }
+
+        form.classList.add('was-validated');
+
+        if (isValid) {
+            const formData = new FormData();
+            formData.append('restaurant_name', document.getElementById('restaurantName').value);
+            formData.append('date', document.getElementById('reviewDate').value);
+            formData.append('rating', ratingValue);
+            formData.append('waiting_time', document.getElementById('waitingTime').value);
+            formData.append('description', document.getElementById('reviewDescription').value);
+            
+            // Send empty string if coordinates weren't captured
+            formData.append('latitude', document.getElementById('latitude')?.value || "");
+            formData.append('longitude', document.getElementById('longitude')?.value || "");
+
+            fetch('php/insert_review.php', { method: 'POST', body: formData })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    bootstrap.Modal.getInstance(document.getElementById('addReviewModal')).hide();
+                    form.reset();
+                    loadReviews();
+                    alert("Review added successfully!");
+                } else {
+                    alert("Error: " + data.message);
+                }
+            })
+            .catch(err => console.error('Form Submit Error:', err));
+        }
+    });
+});
 
 // LOAD RECORDS & DISPLAY
 function loadReviews() {
     fetch('php/read_reviews.php')
-        .then(res => res.json())
-        .then(data => {
-            const tbody = document.getElementById('reviewTableBody');
-            if (!tbody) return;
-            tbody.innerHTML = '';
+    .then(res => res.json())
+    .then(data => {
+        const tbody = document.getElementById('reviewTableBody');
+        if (!tbody) return;
+        tbody.innerHTML = ''; 
 
-            data.forEach(row => {
-                if (map && row.latitude && row.longitude) {
-                    new google.maps.Marker({
-                        position: { lat: parseFloat(row.latitude), lng: parseFloat(row.longitude) },
-                        map: map,
-                        title: row.restaurant_name
-                    });
-                }
+        data.forEach(row => {
+            if(map && row.latitude && row.longitude) {
+                new google.maps.Marker({
+                    position: { lat: parseFloat(row.latitude), lng: parseFloat(row.longitude) },
+                    map: map,
+                    title: row.restaurant_name
+                });
+            }
 
-                let badgeClass = row.rating >= 4 ? "bg-success" : (row.rating == 3 ? "bg-warning text-dark" : "bg-danger");
+            let badgeClass = row.rating >= 4 ? "bg-success" : (row.rating == 3 ? "bg-warning text-dark" : "bg-danger");
 
-                tbody.innerHTML += `
+            tbody.innerHTML += `
                 <tr>
                     <th class="px-3 py-3">${row.id}</th>
                     <td class="py-3">${row.restaurant_name}</td>
@@ -89,9 +140,9 @@ function loadReviews() {
                     </td>
                 </tr>
             `;
-            });
-        })
-        .catch(err => console.error('Data Load Error:', err));
+        });
+    })
+    .catch(err => console.error('Data Load Error:', err));
 }
 
 // DELETE RECORD
@@ -101,14 +152,18 @@ function deleteRecord(id) {
         formData.append('id', id);
 
         fetch('php/delete_review.php', { method: 'POST', body: formData })
-            .then(res => res.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    loadReviews();
-                } else {
-                    alert("Error deleting review.");
-                }
-            })
-            .catch(err => console.error('Delete Error:', err));
+        .then(res => res.json())
+        .then(data => {
+            if (data.status === 'success') {
+                loadReviews(); 
+            } else {
+                alert("Error deleting review.");
+            }
+        })
+        .catch(err => console.error('Delete Error:', err));
     }
+}
+
+function refreshTable() {
+    loadReviews();
 }
