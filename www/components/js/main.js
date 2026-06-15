@@ -15,11 +15,7 @@ if (reviewModalEl) {
 const serverBaseUrl = window.APP_CONFIG.SERVER_URL;
 
 function loadReviews() {
-    fetch(serverBaseUrl + 'getReviews.php', {
-        headers: {
-            "ngrok-skip-browser-warning": "true" // Keep this to bypass the ngrok landing page
-        }
-    })
+    fetch(serverBaseUrl + 'getReviews.php')
     .then(res => {
         if (!res.ok) throw new Error("Server HTTP error status: " + res.status);
         return res.json();
