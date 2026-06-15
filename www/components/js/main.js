@@ -119,6 +119,7 @@ function loadReviews() {
             </tr>
             `;
             });
+            alert("Table Refreshed");
         })
         .catch(err => console.error('Error fetching data rows:', err));
 }
