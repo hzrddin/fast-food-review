@@ -71,7 +71,7 @@ function saveReview(event) {
         })
         .then(data => {
             if (data.status === 'success') {
-                alert("Review Successfully Saved");
+                alert("Review Saved Successfully");
 
                 //Reset Form
                 document.getElementById('fastFoodForm').reset();
@@ -80,7 +80,7 @@ function saveReview(event) {
                 loadReviews();
             } else {
                 // Show SQL errors
-                alert("Uh oh, database error: " + data.message);
+                alert("Uh Oh, Database Error: " + data.message);
             }
         })
         .catch(err => {
@@ -119,7 +119,7 @@ function loadReviews() {
             </tr>
             `;
             });
-            alert("Table Refreshed");
+            alert("Review List Is Up To Date");
         })
         .catch(err => console.error('Error fetching data rows:', err));
 }
