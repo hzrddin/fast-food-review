@@ -14,6 +14,13 @@ if (reviewModalEl) {
 //Replace this endpoint URL
 const serverBaseUrl = window.APP_CONFIG.SERVER_URL;
 
+function saveReview(){
+
+    let restName, revDate,  revRating, waitTime, revDesc;
+
+
+}
+
 //Load All Reviews into Table
 function loadReviews() {
     fetch(serverBaseUrl + 'getReviews.php')
