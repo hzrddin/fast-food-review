@@ -101,6 +101,22 @@
                         </div>
 
                         <div class="col-12">
+                            <label class="form-label">Pinpoint Your Location</label>
+                            <div id="map"
+                                style="height: 250px; width: 100%; border-radius: 8px; border: 1px solid #dee2e6;">
+                            </div>
+                        </div>
+
+                        <div class="col-6">
+                            <label for="userLat" class="form-label">Latitude</label>
+                            <input type="text" class="form-control bg-light" id="userLat" readonly required>
+                        </div>
+                        <div class="col-6">
+                            <label for="userLng" class="form-label">Longitude</label>
+                            <input type="text" class="form-control bg-light" id="userLng" readonly required>
+                        </div>
+
+                        <div class="col-12">
                             <label class="form-label">Rating</label>
                             <input type="hidden" id="reviewRating" name="rating" value="0">
 
@@ -115,10 +131,10 @@
                                     <option value="5">⭐⭐⭐⭐⭐</option>
                                 </select>
 
-                            </div>
-                            <div id="ratingFeedback" class="text-danger mt-1"
-                                style="display: none; font-size: 0.875em;">
-                                Please select a star rating.
+                                <div class="invalid-feedback">
+                                    Please select a rating.
+                                </div>
+
                             </div>
                         </div>
 
@@ -147,7 +163,8 @@
 
                         <div class="col-12">
                             <button type="reset" form="fastFoodForm" class="btn btn-danger">Reset</button>
-                            <button type="submit" form="fastFoodForm" class="btn btn-success" onclick="saveReview()">Save changes</button>
+                            <button type="submit" form="fastFoodForm" class="btn btn-success"
+                                onclick="saveReview(event)">Save changes</button>
                         </div>
 
                     </form>
