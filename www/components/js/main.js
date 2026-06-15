@@ -19,8 +19,7 @@ loadGoogleMapsScript();
 
 function loadGoogleMapsScript() {
     const script = document.createElement('script');
-
-    script.src = `https://maps.googleapis.com/maps/api/js?key=${gmapApi}&loading=async&callback=initMap`;
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${gmapApi}&libraries=marker&loading=async&callback=initMap`;
     script.async = true;
     script.defer = true;
     document.head.appendChild(script);
@@ -40,18 +39,18 @@ function saveReview(event) {
         return; // Stop if invalid
     }
 
-    // Grab all your standard variables
+    // Grab all variables
     let restName = document.getElementById('restaurantName').value;
     let revDate = document.getElementById('reviewDate').value;
     let revRating = document.getElementById('ratingSelect').value;
     let waitTime = document.getElementById('waitingTime').value;
     let revDesc = document.getElementById('reviewDescription').value;
 
-    // Grab your new map coordinates!
+    // Grab map coordinates
     let latitude = document.getElementById('userLat').value;
     let longitude = document.getElementById('userLng').value;
 
-    // Build your FormData to send to PHP
+    // Build FormData to send to PHP
     const formData = new FormData();
     formData.append('restaurantName', restName);
     formData.append('reviewDate', revDate);
@@ -61,7 +60,13 @@ function saveReview(event) {
     formData.append('userLatitude', latitude);
     formData.append('userLongitude', longitude);
 
-    // Run your fetch() POST here!
+    /*
+    fetch(serverBaseUrl + 'saveReview.php')
+    .then(res => {
+        if(!res.ok)throw new Error("Server HTTP error status: " + res.status)
+        return res.json();
+        })
+    */
 }
 
 //Load All Reviews into Table
@@ -128,10 +133,23 @@ function deleteRecord(id) {
 let map;
 let marker;
 
-function initMap() {
-    const defaultLocation = { lat: 6.4325, lng: 100.4316 };
+//Update location
+function updateLocationInputs(lat, lng) {
+    //Grab value
+    const latInput = document.getElementById('userLat');
+    const lngInput = document.getElementById('userLng');
+    
+    //2 decimal point
+    if (latInput && lngInput) {
+        latInput.value = lat.toFixed(6);
+        lngInput.value = lng.toFixed(6);
+    }
+}
 
-    // 1. Build the map (Added mapId as required by the new marker)
+function initMap() {
+    const defaultLocation = { lat: 6.464828, lng: 100.505163 };
+
+    // Build the map
     map = new google.maps.Map(document.getElementById("map"), {
         zoom: 15,
         center: defaultLocation,
@@ -139,23 +157,22 @@ function initMap() {
         mapTypeControl: false
     });
 
-    // 2. Create the NEW AdvancedMarkerElement
+    // AdvancedMarkerElement
     marker = new google.maps.marker.AdvancedMarkerElement({
         map: map,
         position: defaultLocation,
-        gmpDraggable: true, // Notice the new property name here!
+        gmpDraggable: true,
         title: "Drag me to your exact spot!"
     });
 
     updateLocationInputs(defaultLocation.lat, defaultLocation.lng);
 
-    // 3. LISTEN FOR DRAGGING: Update inputs
+    //  Update inputs
     marker.addListener('dragend', function () {
-        // Grab the new position directly from the marker
         updateLocationInputs(marker.position.lat, marker.position.lng);
     });
 
-    // 4. Geolocation (Ask browser for GPS)
+    // Ask browser for GPS
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             (position) => {
