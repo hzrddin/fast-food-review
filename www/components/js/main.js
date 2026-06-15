@@ -14,12 +14,31 @@ if (reviewModalEl) {
 //Replace this endpoint URL
 const serverBaseUrl = window.APP_CONFIG.SERVER_URL;
 
-function saveReview(){
 
-    let restName, revDate,  revRating, waitTime, revDesc;
+
+/*
+function saveReview() {
+    event.preventDefault();
+
+    // 2. Grab form element
+    const form = document.getElementById('fastFoodForm');
+
+    // 3. Validation
+    if (!form.checkValidity()) {
+        //Browser Validation
+        form.reportValidity();
+        return; //Stop
+    }
+
+    let restName = document.getElementById('restaurantName').value;
+    let revDate = document.getElementById('dateReview').value;
+    let revRating = document.getElementById('starRating').value;
+    let waitTime = document.getElementById('waitingTime').value;
+    let revDesc = document.getElementById('reviewDesc').value;
 
 
 }
+    */
 
 //Load All Reviews into Table
 function loadReviews() {
@@ -41,7 +60,7 @@ function loadReviews() {
                 <th class="px-3 py-3">${row.id}</th>
                 <td class="py-3">${row.restaurantName}</td>
                 <td class="py-3">${row.dateReview}</td>
-                <td class="py-3"><span class="badge rounded-pill ${badgeClass}">${row.starRating} Stars</span></td>
+                <td class="py-3"><span class="badge pill ${badgeClass}">${row.starRating} Stars</span></td>
                 <td class="py-3">${row.waitingTime}</td>
                 <td class="py-3">${row.reviewDesc}</td>
                 <td class="py-3">${row.userLatitude}</td>
@@ -67,11 +86,11 @@ function deleteRecord(id) {
             body: formData
         })
             .then(res => res.json())
+
             .then(data => {
                 if (data.status === 'success') {
-
                     alert("ID " + id + " Sucessfully Deleted From The System");
-                    loadReviews(); 
+                    loadReviews();
 
                 } else {
                     alert("Deletion error: " + data.message);
