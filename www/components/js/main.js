@@ -17,19 +17,19 @@ const serverBaseUrl = window.APP_CONFIG.SERVER_URL;
 //Load All Reviews into Table
 function loadReviews() {
     fetch(serverBaseUrl + 'getReviews.php')
-    .then(res => {
-        if (!res.ok) throw new Error("Server HTTP error status: " + res.status);
-        return res.json();
-    })
-    .then(data => {
-        const tbody = document.getElementById('reviewTableBody');
-        if (!tbody) return;
-        tbody.innerHTML = ''; 
+        .then(res => {
+            if (!res.ok) throw new Error("Server HTTP error status: " + res.status);
+            return res.json();
+        })
+        .then(data => {
+            const tbody = document.getElementById('reviewTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
 
-        data.forEach(row => {
-            let badgeClass = row.starRating >= 4 ? "bg-success" : (row.starRating == 3 ? "bg-warning text-dark" : "bg-danger");
+            data.forEach(row => {
+                let badgeClass = row.starRating >= 4 ? "bg-success" : (row.starRating == 3 ? "bg-warning text-dark" : "bg-danger");
 
-            tbody.innerHTML += `
+                tbody.innerHTML += `
             <tr>
                 <th class="px-3 py-3">${row.id}</th>
                 <td class="py-3">${row.restaurantName}</td>
@@ -44,9 +44,9 @@ function loadReviews() {
                 </td>
             </tr>
             `;
-        });
-    })
-    .catch(err => console.error('Error fetching data rows:', err));
+            });
+        })
+        .catch(err => console.error('Error fetching data rows:', err));
 }
 
 //Delete By ID
@@ -55,18 +55,21 @@ function deleteRecord(id) {
         const formData = new FormData();
         formData.append('id', id);
 
-        fetch(serverBaseUrl + 'deleteReview.php', { 
-            method: 'POST', 
-            body: formData 
+        fetch(serverBaseUrl + 'deleteReview.php', {
+            method: 'POST',
+            body: formData
         })
-        .then(res => res.json())
-        .then(data => {
-            if (data.status === 'success') {
-                loadReviews(); // Reload the table automatically
-            } else {
-                alert("Deletion error: " + data.message);
-            }
-        })
-        .catch(err => console.error('Deletion Exception:', err));
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === 'success') {
+
+                    alert("ID " + id + " Sucessfully Deleted From The System");
+                    loadReviews(); 
+
+                } else {
+                    alert("Deletion error: " + data.message);
+                }
+            })
+            .catch(err => console.error('Deletion Exception:', err));
     }
 }
