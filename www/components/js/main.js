@@ -11,7 +11,8 @@ if (reviewModalEl) {
     });
 }
 
-const serverBaseUrl = /*Replace here*/'';
+//Replace this with API Key
+const serverBaseUrl = process.env.SERVER_URL;
 
 function loadReviews() {
     fetch(serverBaseUrl + 'getReviews.php', {
@@ -57,7 +58,6 @@ function deleteRecord(id) {
         const formData = new FormData();
         formData.append('id', id);
 
-        // Combines to: https://chowder-cosmetics-reentry.ngrok-free.dev/fast-food/delete_review.php
         fetch(serverBaseUrl + 'delete_review.php', { 
             method: 'POST', 
             body: formData 
