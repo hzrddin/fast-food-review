@@ -11,9 +11,10 @@ if (reviewModalEl) {
     });
 }
 
-//Replace this with API Key
+//Replace this endpoint URL
 const serverBaseUrl = window.APP_CONFIG.SERVER_URL;
 
+//Load All Reviews into Table
 function loadReviews() {
     fetch(serverBaseUrl + 'getReviews.php')
     .then(res => {
@@ -54,7 +55,7 @@ function deleteRecord(id) {
         const formData = new FormData();
         formData.append('id', id);
 
-        fetch(serverBaseUrl + 'delete_review.php', { 
+        fetch(serverBaseUrl + 'deleteReview.php', { 
             method: 'POST', 
             body: formData 
         })
