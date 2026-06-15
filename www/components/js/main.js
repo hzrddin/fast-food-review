@@ -60,13 +60,32 @@ function saveReview(event) {
     formData.append('userLatitude', latitude);
     formData.append('userLongitude', longitude);
 
-    /*
-    fetch(serverBaseUrl + 'saveReview.php')
-    .then(res => {
-        if(!res.ok)throw new Error("Server HTTP error status: " + res.status)
-        return res.json();
+    // Send
+    fetch(serverBaseUrl + 'saveReview.php', {
+        method: 'POST',
+        body: formData
+    })
+        .then(res => {
+            if (!res.ok) throw new Error("Server HTTP error status: " + res.status);
+            return res.json();
         })
-    */
+        .then(data => {
+            if (data.status === 'success') {
+                alert("Review Successfully Saved");
+
+                //Reset Form
+                document.getElementById('fastFoodForm').reset();
+
+                // Reload the table in the background!
+                loadReviews();
+            } else {
+                // Show SQL errors
+                alert("Uh oh, database error: " + data.message);
+            }
+        })
+        .catch(err => {
+            console.error("Save Exception: ", err);
+        });
 }
 
 //Load All Reviews into Table
@@ -134,7 +153,7 @@ function updateLocationInputs(lat, lng) {
     //Grab value
     const latInput = document.getElementById('userLat');
     const lngInput = document.getElementById('userLng');
-    
+
     //2 decimal point
     if (latInput && lngInput) {
         latInput.value = lat.toFixed(6);
@@ -149,7 +168,7 @@ function initMap() {
     // Malaysia
     map = new google.maps.Map(document.getElementById("map"), {
         zoom: 6, // Low zoom to show the country
-        center: { lat: 4.2105, lng: 101.9758 }, 
+        center: { lat: 4.2105, lng: 101.9758 },
         mapId: "DEMO_MAP_ID",
         mapTypeControl: false
     });
