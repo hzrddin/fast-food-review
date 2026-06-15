@@ -1,7 +1,7 @@
 // Grab modal element
 const reviewModalEl = document.getElementById('addReviewModal');
 
-// Wait until close to reset
+// Reset when modal close
 if (reviewModalEl) {
     reviewModalEl.addEventListener('hidden.bs.modal', function () {
         const form = document.getElementById('fastFoodForm');
@@ -12,7 +12,7 @@ if (reviewModalEl) {
 }
 
 //Replace this with API Key
-const serverBaseUrl = process.env.SERVER_URL;
+const serverBaseUrl = window.APP_CONFIG.SERVER_URL;
 
 function loadReviews() {
     fetch(serverBaseUrl + 'getReviews.php', {
