@@ -129,10 +129,6 @@ function deleteRecord(id) {
     }
 }
 
-//Map
-let map;
-let marker;
-
 //Update location
 function updateLocationInputs(lat, lng) {
     //Grab value
@@ -146,33 +142,43 @@ function updateLocationInputs(lat, lng) {
     }
 }
 
-function initMap() {
-    const defaultLocation = { lat: 6.464828, lng: 100.505163 };
+let map;
+let marker = null;
 
-    // Build the map
+function initMap() {
+    // Malaysia
     map = new google.maps.Map(document.getElementById("map"), {
-        zoom: 15,
-        center: defaultLocation,
+        zoom: 6, // Low zoom to show the country
+        center: { lat: 4.2105, lng: 101.9758 }, 
         mapId: "DEMO_MAP_ID",
         mapTypeControl: false
     });
 
-    // AdvancedMarkerElement
-    marker = new google.maps.marker.AdvancedMarkerElement({
-        map: map,
-        position: defaultLocation,
-        gmpDraggable: true,
-        title: "Drag me to your exact spot!"
-    });
+    // Create/Move the pin
+    function placeMarker(location) {
+        if (!marker) {
+            // Create the pin
+            marker = new google.maps.marker.AdvancedMarkerElement({
+                map: map,
+                position: location,
+                gmpDraggable: true,
+                title: "Drag me to adjust!"
+            });
 
-    updateLocationInputs(defaultLocation.lat, defaultLocation.lng);
+            // Listen for dragging
+            marker.addListener('dragend', function () {
+                updateLocationInputs(marker.position.lat, marker.position.lng);
+            });
+        } else {
+            // If already exists, move to the new spot
+            marker.position = location;
+        }
 
-    //  Update inputs
-    marker.addListener('dragend', function () {
-        updateLocationInputs(marker.position.lat, marker.position.lng);
-    });
+        // Update Lat & Long
+        updateLocationInputs(location.lat, location.lng);
+    }
 
-    // Ask browser for GPS
+    // 3. Ask browser for GPS
     if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
             (position) => {
@@ -180,11 +186,20 @@ function initMap() {
                     lat: position.coords.latitude,
                     lng: position.coords.longitude,
                 };
-                map.setCenter(livePos);
-                marker.position = livePos; // Move the marker
-                updateLocationInputs(livePos.lat, livePos.lng);
+                map.setCenter(livePos); // Move camera to the user
+                map.setZoom(15); // Zoom in close!
+                placeMarker(livePos); // Drop the pin!
             },
-            () => console.warn("User blocked GPS or it failed.")
+            () => console.warn("User blocked GPS. They must click the map to drop a pin.")
         );
     }
+
+    // Allow the user to click anywhere on the map to drop the pin manually
+    map.addListener('click', (event) => {
+        const clickedPos = {
+            lat: event.latLng.lat(),
+            lng: event.latLng.lng()
+        };
+        placeMarker(clickedPos);
+    });
 }
