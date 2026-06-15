@@ -11,48 +11,65 @@ if (reviewModalEl) {
     });
 }
 
+const serverBaseUrl = /*Replace here*/'';
+
 function loadReviews() {
-    // FIX 2: Removed trailing formatting comma syntax error
-    fetch(`${SERVER_URL}`)
-        .then(res => {
-            if (!res.ok) throw new Error("Server HTTP error status: " + res.status);
-            return res.json();
+    fetch(serverBaseUrl + 'getReviews.php', {
+        headers: {
+            "ngrok-skip-browser-warning": "true" // Keep this to bypass the ngrok landing page
+        }
+    })
+    .then(res => {
+        if (!res.ok) throw new Error("Server HTTP error status: " + res.status);
+        return res.json();
+    })
+    .then(data => {
+        const tbody = document.getElementById('reviewTableBody');
+        if (!tbody) return;
+        tbody.innerHTML = ''; 
+
+        data.forEach(row => {
+            let badgeClass = row.starRating >= 4 ? "bg-success" : (row.starRating == 3 ? "bg-warning text-dark" : "bg-danger");
+
+            tbody.innerHTML += `
+            <tr>
+                <th class="px-3 py-3">${row.id}</th>
+                <td class="py-3">${row.restaurantName}</td>
+                <td class="py-3">${row.dateReview}</td>
+                <td class="py-3"><span class="badge rounded-pill ${badgeClass}">${row.starRating} Stars</span></td>
+                <td class="py-3">${row.waitingTime}</td>
+                <td class="py-3">${row.reviewDesc}</td>
+                <td class="py-3">${row.userLatitude}</td>
+                <td class="py-3">${row.userLongitude}</td>
+                <td class="py-3 text-center">
+                    <button class="btn btn-sm btn-danger" onclick="deleteRecord(${row.id})">Delete</button>
+                </td>
+            </tr>
+            `;
+        });
+    })
+    .catch(err => console.error('Error fetching data rows:', err));
+}
+
+//Delete By ID
+function deleteRecord(id) {
+    if (confirm("Are you sure you want to remove this review?")) {
+        const formData = new FormData();
+        formData.append('id', id);
+
+        // Combines to: https://chowder-cosmetics-reentry.ngrok-free.dev/fast-food/delete_review.php
+        fetch(serverBaseUrl + 'delete_review.php', { 
+            method: 'POST', 
+            body: formData 
         })
+        .then(res => res.json())
         .then(data => {
-            const tbody = document.getElementById('reviewTableBody');
-            if (!tbody) return;
-            tbody.innerHTML = ''; // Wipe stale entries cleanly
-
-            data.forEach(row => {
-                // Drop persistent pin on your main map layout if active
-                if (window.map && row.latitude && row.longitude) {
-                    new google.maps.Marker({
-                        position: { lat: parseFloat(row.latitude), lng: parseFloat(row.longitude) },
-                        map: window.map,
-                        title: row.restaurant_name
-                    });
-                }
-
-                // Rating Badge system mapping (1-2 danger, 3 warning, 4-5 success)
-                let badgeClass = row.rating >= 4 ? "bg-success" : (row.rating == 3 ? "bg-warning text-dark" : "bg-danger");
-
-                // FIX 3: Reverted column property variables back to snake_case mapping from your PHP output
-                tbody.innerHTML += `
-                <tr>
-                    <th class="px-3 py-3">${row.id}</th>
-                    <td class="py-3">${row.restaurant_name || "-"}</td>
-                    <td class="py-3">${row.date_review || "-"}</td>
-                    <td class="py-3"><span class="badge rounded-pill ${badgeClass}">${row.rating || "0"} Stars</span></td>
-                    <td class="py-3">${row.waiting_time || "-"}</td>
-                    <td class="py-3">${row.description || "-"}</td>
-                    <td class="py-3">${row.latitude || "-"}</td>
-                    <td class="py-3">${row.longitude || "-"}</td>
-                    <td class="py-3 text-center">
-                        <button class="btn btn-sm btn-danger" onclick="deleteRecord(${row.id})">Delete</button>
-                    </td>
-                </tr>
-                `;
-            });
+            if (data.status === 'success') {
+                loadReviews(); // Reload the table automatically
+            } else {
+                alert("Deletion error: " + data.message);
+            }
         })
-        .catch(err => console.error('Error fetching data rows:', err));
+        .catch(err => console.error('Deletion Exception:', err));
+    }
 }
